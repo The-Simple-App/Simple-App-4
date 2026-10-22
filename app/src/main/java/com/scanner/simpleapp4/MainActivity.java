@@ -12,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.Random;
@@ -22,21 +24,14 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    private DoorView viewModel;
 
+    private TextView txtResult;
+    private TextView txtScore;
 
-//    GuessingGame gg;
-//    BottomNavigationView bnv;
-//    FragmentContainerView fcv;
-
-    Private Button onNavigationItemSelected;
-    private Random random = new Random();
-
-    TextView txtResult;
-    TextView txtScore;
-
-    Button door1;
-    Button door2;
-    Button door3;
+    private Button door1;
+    private Button door2;
+    private Button door3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        viewModel = new ViewModelProvider(this).get(DoorView.class);
+
         txtResult = findViewById(R.id.txtResult);
         txtScore = findViewById(R.id.txtScore);
 
@@ -56,33 +53,21 @@ public class MainActivity extends AppCompatActivity {
         door2 = findViewById(R.id.btnDoor2);
         door3 = findViewById(R.id.btnDoor3);
 
-                                                    }
+        door1.setOnClickListener(v -> doorChoice(1));
+        door2.setOnClickListener(v -> doorChoice(2));
+        door3.setOnClickListener(v -> doorChoice(3));
 
+        updateUi(); // shows the preserved state right after recreation
+    }
 
-//        bnv.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-//
-//                FragmentTransaction ft = fm.beginTransaction();
-//
-//                if(menuItem.getItemId() == R.id.rulesMenuItem)
-//                {
-//                    ft.replace(R.id.fragmentContainer, IntroFragment.class, null);
-//                }
-//                else if(menuItem.getItemId() == R.id.gameMenuItem)
-//                {
-//                    GameFragment newGameFragment = GameFragment.newInstance(gg, myself);
-//                    ft.replace(R.id.fragmentContainer, newGameFragment);
-//                }
-//
-//                ft.commit();
-//
-//                return false;
-//            }
-//        });
-//    }
-//
-    public void openDoor() {
+    private void doorChoice(int chosenDoor) {
+        viewModel.choose(chosenDoor);
+        updateUi();
+    }
 
+    private void updateUi() {
+        txtResult.setText(viewModel.getResultText());
+        txtScore.setText("Win: " + viewModel.getWin() + " Lose: " + viewModel.getLose());
     }
 }
+
